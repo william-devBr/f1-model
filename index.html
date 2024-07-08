@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>F1 Wheels</title>
+    <style>
+        body {
+          
+            background-image: url('redbullcar.jpg');
+            background-repeat: no-repeat;
+        }
+        #app {
+            /* background-image: url('redbullcar.jpg');
+            background-repeat: no-repeat; */
+           
+            display:flex;
+            justify-content: center;
+            width: 100%;
+            
+        }
+        #car {
+            width: 100%;
+            border:1px solid #f25;
+            display: flex;
+            flex-direction: row;
+        }
+
+       #car .img-back {
+        display: flex;
+        width: 32.333%;
+        margin:165px 56px;
+       }
+       #car .img-front {
+        display: flex;
+        width: 15.999%;
+        margin:163px 225px;
+       }
+        .pneus {
+            display:flex;
+            flex-direction: column;
+            width: 100%;
+           
+        }
+        .pneus img {
+            display: flex;
+            align-self: flex-start;
+            margin:10px 10px;
+            width: 8%;
+            cursor: pointer;
+        }
+     
+        .pneus > div {
+            display:flex;
+            flex-direction: column;
+        }
+        .acelera {
+            animation: acelera  linear  infinite;
+        }
+        .freia {
+            animation: freia  linear ease-in-out;
+        }
+       @keyframes acelera {
+          from {
+             transform: rotate(0deg);
+          }
+          to {
+            transform : rotate(360deg);
+          }
+       }
+
+       @keyframes freia {
+        from {
+             transform: rotate(5deg);
+          }
+          to {
+            transform : rotate(0deg);
+          }
+       }
+    </style>
+</head>
+<body>
+   
+    <div id="app">
+       
+         <div id="car">
+            <div>
+            <img class="img-back" src="wheels.jpg" alt="" data-src="0">
+            </div>
+            <div>
+             <img class="img-front" src="wheels.jpg" alt="" data-src="0">
+            </div>
+          
+         </div>
+         <div class="pneus">
+            <div>
+                
+                <img src="wheels.jpg" alt="" data-src="0">
+                
+              </div>
+             <div>
+               
+                <img src="medio.jpg" alt="" data-src="1">
+                
+            </div>
+             <div>
+                <img src="duro.jpg" alt="" data-src="2">
+                
+            </div>
+        <div>
+            
+         <div id="velo">
+            0/Kmh
+         </div>
+         <div>
+            (press key arrow-right) to accelerate
+         </div>
+     
+         <h1>RedBull racing team F1</h1>
+        </div>
+  
+    <script>
+        const whell_front = document.querySelector(".img-front")
+        const whell_back = document.querySelector(".img-back")
+        const velocimetro = document.querySelector("#velo");
+        let velocidade = 0;
+        let ctrl =10;
+        let start_engine = false;
+
+
+
+
+     const pneus = [...document.querySelectorAll("img[data-src]")];
+     pneus.forEach(pneu => {
+         pneu.addEventListener("click",({target})=> {
+            pitStop();
+            setTimeout(()=>{
+                whell_back.src = target.src;
+                whell_front.src = target.src;
+             },4000) 
+           
+         })
+     }) 
+     document.addEventListener("keydown",event=> {
+
+            if(event.keyCode === 39) {
+                if(whell_back.classList.contains("freia")) {
+                    whell_back.classList.remove("freia");
+                    whell_front.classList.remove("freia");
+                  
+                }
+               
+                if(velocidade < 330) {
+                    acelera(); 
+                }
+                
+                let duration = (ctrl / velocidade);
+                whell_back.style.animationDuration = duration+"s";
+                whell_front.style.animationDuration = duration+"s";
+             
+                velocimetro.textContent= `${velocidade}/Kmh`;
+            }
+           
+     });
+
+     document.addEventListener("keyup",()=> {
+          
+        if(velocidade <= 0) return;
+        let duration = (ctrl / velocidade) ;
+        let int = setInterval(()=>  {
+                velocidade--;
+                whell_back.style.animationDuration = duration+"s";
+                whell_front.style.animationDuration = duration+"s";
+                velocimetro.textContent= `${velocidade}/Kmh`;
+
+                if(velocidade <= 0) {
+                    whell_back.classList.remove("acelera");
+                    whell_front.classList.remove("acelera");
+                    frear();
+                    clearInterval(int);
+                }
+
+                },duration);
+    
+     })
+
+     function acelera(){
+        if(!start_engine) {
+            engine();
+        }
+        velocidade+=1;
+        whell_back.classList.add("acelera");
+        whell_front.classList.add("acelera");
+     }
+
+     function frear() {
+        whell_back.classList.add("freia");
+        whell_front.classList.add("freia");
+     }
+
+     function engine() {
+        start_engine = true;
+
+        let audio = new Audio('f1-sound.mp3');
+        audio.addEventListener('loadedmetadata', (event) => {
+            console.log(`Duração do áudio: ${audio.duration} segundos`);
+            console.log(event);
+            audio.play();
+        });
+
+        // Você pode iniciar o carregamento do áudio aqui
+        audio.load();
+     }
+
+     function pitStop() {
+         let audio = new Audio('pit-stop.mp3');
+         audio.play();
+     }
+    </script>
+</body>
+</html>
